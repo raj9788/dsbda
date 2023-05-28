@@ -1,0 +1,85 @@
+[cloudera@quickstart ~]$ hbase shell
+2023-05-27 23:08:23,670 INFO  [main] Configuration.deprecation: hadoop.native.lib is deprecated. Instead, use io.native.lib.available
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.0.0-cdh5.4.2, rUnknown, Tue May 19 17:07:29 PDT 2015
+
+hbase(main):001:0> create 'flight_info' , 'flight','schedule','delay'
+0 row(s) in 0.9570 seconds
+
+=> Hbase::Table - flight_info
+hbase(main):002:0> list
+TABLE                                                                                                                
+flight_info                                                                                                          
+1 row(s) in 0.0420 seconds
+
+=> ["flight_info"]
+hbase(main):003:0> put 'flight_info','1','flight:id','1'
+0 row(s) in 0.2390 seconds
+
+hbase(main):004:0> put 'flight_info','1','schedule:time','10.00AM'
+0 row(s) in 0.0050 seconds
+
+hbase(main):005:0> put 'flight_info','1','delay:delay',10
+0 row(s) in 0.0090 seconds
+
+hbase(main):006:0> scan 'flight_info'
+ROW                            COLUMN+CELL                                                                           
+ 1                             column=delay:delay, timestamp=1685254289480, value=10                                 
+ 1                             column=flight:id, timestamp=1685254254028, value=1                                    
+ 1                             column=schedule:time, timestamp=1685254271902, value=10.00AM                          
+1 row(s) in 0.0310 seconds
+
+hbase(main):007:0> put 'flight_info','2','flight:id','2'
+0 row(s) in 0.0170 seconds
+
+hbase(main):008:0> put 'flight_info','2','schedule:time','10.35AM'
+0 row(s) in 0.0070 seconds
+
+hbase(main):009:0> put 'flight_info','2','delay:delay',25
+0 row(s) in 0.0060 seconds
+
+hbase(main):010:0> put 'flight_info','3','flight:id','3'
+0 row(s) in 0.0060 seconds
+
+hbase(main):011:0> put 'flight_info','3','schedule:time','1.25PM'
+0 row(s) in 0.0060 seconds
+
+hbase(main):012:0> put 'flight_info','3','delay:delay',60
+0 row(s) in 0.0070 seconds
+
+hbase(main):013:0> scan 'flight_info'
+ROW                            COLUMN+CELL                                                                           
+ 1                             column=delay:delay, timestamp=1685254289480, value=10                                 
+ 1                             column=flight:id, timestamp=1685254254028, value=1                                    
+ 1                             column=schedule:time, timestamp=1685254271902, value=10.00AM                          
+ 2                             column=delay:delay, timestamp=1685254328762, value=25                                 
+ 2                             column=flight:id, timestamp=1685254311372, value=2                                    
+ 2                             column=schedule:time, timestamp=1685254321588, value=10.35AM                          
+ 3                             column=delay:delay, timestamp=1685254362219, value=60                                 
+ 3                             column=flight:id, timestamp=1685254339981, value=3                                    
+ 3                             column=schedule:time, timestamp=1685254354218, value=1.25PM                           
+3 row(s) in 0.0330 seconds
+
+hbase(main):014:0> exit
+[cloudera@quickstart ~]$ hive
+
+hive> create external table flight_info_hive(
+    > flight_id string,
+    > schedule_time string,
+    > delay int
+    > )
+    > stored by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > with serdeproperties(
+    > "hbase.columns.mapping" = ":key,schedule:schedule,delay:delay"
+    > )
+    > tblproperties(
+    > 'hbase.table.name'='flight_info'
+    > );
+OK
+Time taken: 2.461 seconds
+hive> select sum(delay) as total_delay
+    > from flight_info_hive;
+hive> select avg(delay) as average_delay
+    > from flight_info_hive;
+

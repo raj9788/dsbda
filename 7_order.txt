@@ -1,0 +1,67 @@
+ initialized using configuration in file:/etc/hive/conf.dist/hive-log4j.properties
+WARNING: Hive CLI is deprecated and migration to Beeline is recommended.
+hive> -- Create Customer_info table
+    > CREATE TABLE IF NOT EXISTS Customer_info (
+    >   Cust_ID INT,
+    >   Cust_Name STRING,
+    >   OrderID INT
+    > );
+OK
+Time taken: 1.133 seconds
+hive> 
+    > -- Create order_info table
+    > CREATE TABLE IF NOT EXISTS order_info (
+    >   OrderID INT,
+    >   ItemID INT,
+    >   Quantity INT
+    > );
+OK
+Time taken: 0.027 seconds
+hive> 
+    > -- Create item_info table
+    > CREATE TABLE IF NOT EXISTS item_info (
+    >   Item_ID INT,
+    >   Item_Name STRING,
+    >   ItemPrice FLOAT
+    > );
+OK
+Time taken: 0.026 seconds
+hive> insert into customer_info values 
+    > (1,'John',100),
+    > (2,'Lisa',101),
+    > (3,'Mike',102);
+
+Time taken: 45.598 seconds
+hive> insert into order_info values
+    > (100,1,5),
+    > (101,2,3),
+    > (102,3,2);
+hive> insert into order_info values
+    > (1,'Apple',2.5),
+    > (2,'banana',1.5),
+    > (3,'Orange',3.0);
+hive> -- Perform join on Customer_info, order_info, and item_info tables
+    > SELECT c.Cust_ID, c.Cust_Name, o.OrderID, i.Item_Name, i.ItemPrice
+    > FROM Customer_info c
+    > JOIN order_info o ON c.OrderID = o.OrderID
+    > JOIN item_info i ON o.ItemID = i.Item_ID;
+
+Time taken: 54.562 seconds
+hive> -- Calculate total sales
+    > SELECT SUM(i.ItemPrice * o.Quantity) AS total_sales
+    > FROM order_info o
+    > JOIN item_info i ON o.ItemID = i.Item_ID;
+
+Time taken: 56.012 seconds, Fetched: 1 row(s)
+hive> 
+    > -- Calculate average sales
+    > SELECT AVG(i.ItemPrice * o.Quantity) AS average_sales
+    > FROM order_info o
+    > JOIN item_info i ON o.ItemID = i.Item_ID;
+
+hive> -- Find order details with maximum cost
+    > SELECT o.OrderID, i.Item_Name, i.ItemPrice, o.Quantity, (i.ItemPrice * o.Quantity) AS order_cost
+    > FROM order_info o
+    > JOIN item_info i ON o.ItemID = i.Item_ID
+    > ORDER BY order_cost DESC
+    > LIMIT 1;

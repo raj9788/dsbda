@@ -1,0 +1,72 @@
+hive> create table if not exists onlineretail(
+    > InvoiceNo string,
+    >  StockCode STRING,
+    >   Description STRING,
+    >   Quantity INT,
+    >   InvoiceDate STRING,
+    >   UnitPrice FLOAT,
+    >   CustomerID INT,
+    >   Country STRING
+    > );
+OK
+Time taken: 1.189 seconds
+hive> show tables;
+OK
+customer_info
+item_info
+onlineretail
+order_info
+Time taken: 0.293 seconds, Fetched: 4 row(s)
+hive> insert into onlineretail values
+    >  ('536366', '71053', 'WHITE METAL LANTERN', 6, '01-12-2010 08:28', 3.39, 17851, 'United Kingdom'),
+    >     ('536367', '84406B', 'CREAM CUPID HEARTS COAT HANGER', 8, '01-12-2010 08:34', 2.75, 17851, 'United Kingdom'),
+    >     ('536368', '84029G', 'KNITTED UNION FLAG HOT WATER BOTTLE', 6, '01-12-2010 08:34', 3.39, 17850, 'United Kingdom'),
+    >     ('536369', '84406B', 'CREAM CUPID HEARTS COAT HANGER', 6, '01-12-2010 08:35', 2.75, 17850, 'United Kingdom');
+
+hive> -- Calculate total sales
+    > SELECT SUM(Quantity * UnitPrice) AS total_sales
+    > FROM OnlineRetail;
+79.18000030517578
+Time taken: 34.371 seconds, Fetched: 1 row(s)
+
+
+
+hive> 
+    > -- Calculate average sales
+    > SELECT AVG(Quantity * UnitPrice) AS average_sales
+    > FROM OnlineRetail;
+19.795000076293945
+Time taken: 51.072 seconds, Fetched: 1 row(s)
+
+
+hive> -- Find order details with maximum cost
+    > SELECT InvoiceNo, StockCode, Description, Quantity, UnitPrice, (Quantity * UnitPrice) AS order_cost
+    > FROM OnlineRetail
+    > ORDER BY order_cost DESC
+    > LIMIT 1;
+
+536367	84406B	CREAM CUPID HEARTS COAT HANGER	8	2.75	22.0
+Time taken: 36.051 seconds, Fetched: 1 row(s)
+
+
+
+hive> -- Find customer details with maximum order total
+    > SELECT CustomerID, SUM(Quantity * UnitPrice) AS order_total
+    > FROM OnlineRetail
+    > GROUP BY CustomerID
+    > ORDER BY order_total DESC
+    > LIMIT 1;
+
+17851	42.34000015258789
+Time taken: 69.809 seconds, Fetched: 1 row(s)
+hive> -- Find the country with maximum sales
+    > SELECT Country, SUM(Quantity * UnitPrice) AS total_sales
+    > FROM OnlineRetail
+    > GROUP BY Country
+    > ORDER BY total_sales DESC
+    > LIMIT 1;
+
+
+United Kingdom	79.18000030517578
+Time taken: 67.701 seconds, Fetched: 1 row(s)
+
