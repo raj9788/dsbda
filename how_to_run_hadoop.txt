@@ -1,3 +1,17 @@
+1]Open Eclipse> File > New > Java Project >( Name it – MRProgramsDemo) > Finish.
+
+2]Right Click > New > Package ( Name it - PackageDemo) > Finish.
+
+3]Right Click on Package > New > Class (Name it - WordCount).
+
+4]Add Following Reference Libraries:
+
+  1]Right Click on Project > Build Path> Add External
+
+       1] /usr/lib/hadoop-0.20/hadoop-core.jar
+
+       2]  Usr/lib/hadoop-0.20/lib/Commons-cli-1.2.jar
+
 hadoop fs -put filename filename_in_hadoop
 hadoop jar yourJar.jar PackageName.ClassName filename_in_hadoop nutput_directory_name
 hadoop fs -ls output_directory_name
