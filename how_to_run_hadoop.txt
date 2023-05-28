@@ -1,0 +1,9 @@
+hadoop fs -put filename filename_in_hadoop
+hadoop jar yourJar.jar PackageName.ClassName filename_in_hadoop nutput_directory_name
+hadoop fs -ls output_directory_name
+hadoop fs -cat output_directory_name/part-r-00000
+
+
+
+to delete file for folder from hadoop
+hadoop fa -rm -r filename_or_directory_name
